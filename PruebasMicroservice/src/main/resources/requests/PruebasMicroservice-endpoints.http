@@ -1,0 +1,19 @@
+###
+POST http://localhost:8082/api/pruebas
+Content-Type: application/json
+
+{
+  "idVehiculo": 13,
+  "idInteresado": 13,
+  "idEmpleado": 13,
+  "fechaHoraInicio": "03/09/1999",
+  "fechaHoraFin": "03/10/1999",
+  "comentarios": "hola"
+}
+
+<> 2024-10-26T120246.200.json
+<> 2024-10-26T120136.500.json
+<> 2024-10-26T115949.500.json
+<> 2024-10-26T115655.500.json
+<> 2024-10-26T115623.500.json
+<> 2024-10-26T115535.400.json

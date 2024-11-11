@@ -1,0 +1,14 @@
+###
+POST http://localhost:8081/api/empleados
+Content-Type: application/json
+
+{
+  "legajo": "78805",
+  "nombre": "Francisco",
+  "apellido": "Fourcade",
+  "telefonoContacto": 1234
+}
+
+<> 2024-10-25T192244.200.json
+<> 2024-10-25T191840.500.json
+<> 2024-10-25T191818.500.json

@@ -1,0 +1,11 @@
+###
+PUT http://localhost:8082/api/pruebas/1
+Content-Type: application/json
+
+{
+  "fechaHoraInicio": "10/10/2020",
+  "fechaHoraFin": "1/10/2024",
+  "comentarios": "chau me fui"
+}
+
+<> 2024-10-26T120400.200.json
