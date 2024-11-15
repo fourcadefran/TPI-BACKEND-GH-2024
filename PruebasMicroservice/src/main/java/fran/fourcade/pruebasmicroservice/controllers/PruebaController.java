@@ -1,6 +1,8 @@
 package fran.fourcade.pruebasmicroservice.controllers;
 
+import fran.fourcade.pruebasmicroservice.models.Posicion;
 import fran.fourcade.pruebasmicroservice.models.Prueba;
+import fran.fourcade.pruebasmicroservice.models.Vehiculo;
 import fran.fourcade.pruebasmicroservice.services.PruebasService;
 import fran.fourcade.pruebasmicroservice.services.ServiceExceptionPrueba;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,10 @@ public class PruebaController {
     @GetMapping
     public ResponseEntity<Iterable<Prueba>> getAllPruebas() {
         return ResponseEntity.ok(pruebasService.getAll());
+    }
+    @GetMapping("/now")
+    public ResponseEntity<Iterable<Prueba>> getAllPruebasNow() {
+        return ResponseEntity.ok(pruebasService.getAllNow());
     }
 
     @GetMapping("/{id}")
@@ -75,6 +81,16 @@ public class PruebaController {
             pruebasService.delete(id);
             return ResponseEntity.ok(prueba);
         } catch (ServiceExceptionPrueba e) {
+            return ResponseEntity.notFound()
+                    .header("Error-Message", e.getMessage())
+                    .build();
+        }
+    }
+    @PostMapping("/{id}/posicion/vehiculo")
+    public ResponseEntity<Vehiculo> posicionVehiculo(@PathVariable Long id, @RequestBody Posicion posicionDetails) {
+        try {
+            return ResponseEntity.ok(pruebasService.posicionVehiculo(id, posicionDetails));
+        } catch (ServiceExceptionPrueba e){
             return ResponseEntity.notFound()
                     .header("Error-Message", e.getMessage())
                     .build();

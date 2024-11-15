@@ -30,7 +30,7 @@ public class Interesado {
     private String apellido;
 
     @Column(nullable = false)
-    private String restringido;
+    private Boolean restringido;
 
     @Column(nullable = false)
     private int nroLicencia;

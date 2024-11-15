@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+// todo: notificaciones
+
 @Entity(name = "pruebas")
 @Data
 @AllArgsConstructor
@@ -38,7 +40,7 @@ public class Prueba {
     @Column(nullable = false)
     private String fechaHoraInicio;
 
-    @Column(nullable = false)
+    @Column()
     private String fechaHoraFin;
 
     @Column(nullable = false)
