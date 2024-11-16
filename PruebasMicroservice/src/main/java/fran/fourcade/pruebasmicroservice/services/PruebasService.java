@@ -1,11 +1,9 @@
 package fran.fourcade.pruebasmicroservice.services;
 
 import fran.fourcade.pruebasmicroservice.models.Interesado;
-import fran.fourcade.pruebasmicroservice.models.Posicion;
 import fran.fourcade.pruebasmicroservice.models.Prueba;
 import fran.fourcade.pruebasmicroservice.models.Vehiculo;
 import fran.fourcade.pruebasmicroservice.repositories.InteresadoRepository;
-import fran.fourcade.pruebasmicroservice.repositories.PosicionRepository;
 import fran.fourcade.pruebasmicroservice.repositories.PruebaRepository;
 import fran.fourcade.pruebasmicroservice.repositories.VehiculoRepository;
 import org.hibernate.service.spi.ServiceException;
@@ -23,14 +21,14 @@ public class PruebasService {
     private final PruebaRepository repository;
     private final InteresadoRepository interesadoRepository;
     private final VehiculoRepository vehiculoRepository;
-    private final PosicionRepository posicionRepository;
+    private final PruebaRepository pruebaRepository;
 
     @Autowired
-    public PruebasService(PruebaRepository repository, InteresadoRepository interesadoRepository, VehiculoRepository vehiculoRepository, PosicionRepository posicionRepository) {
+    public PruebasService(PruebaRepository repository, InteresadoRepository interesadoRepository, VehiculoRepository vehiculoRepository , PruebaRepository pruebaRepository) {
         this.repository = repository;
         this.interesadoRepository = interesadoRepository;
         this.vehiculoRepository = vehiculoRepository;
-        this.posicionRepository = posicionRepository;
+        this.pruebaRepository = pruebaRepository;
     }
 
     public Iterable<Prueba> getAll() {
@@ -42,13 +40,13 @@ public class PruebasService {
     }
 
     public Prueba getById(Long id) throws ServiceExceptionPrueba {
-        return repository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("No se encontro el id de la Prueba"));
+        return repository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("No se encontró el id de la Prueba"));
 
     }
 
     public Prueba create(Prueba prueba) {
         Interesado interesado = interesadoRepository.findById(prueba.getInteresado().getId())
-                .orElseThrow(() -> new ServiceException("No se encontro el interesado"));
+                .orElseThrow(() -> new ServiceException("No se encontró el interesado"));
 
         if (interesado.getRestringido()) {
             throw new ServiceException("El interesado está restringido y no puede realizar pruebas de vehículos.");
@@ -84,7 +82,7 @@ public class PruebasService {
     }
 
     public Prueba update(Long id, Prueba pruebaDetails) throws ServiceExceptionPrueba {
-        Prueba prueba = repository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("No se encontro la Prueba"));
+        Prueba prueba = repository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("No se encontró la Prueba"));
 
         prueba.setComentarios(pruebaDetails.getComentarios());
         prueba.setFechaHoraFin(pruebaDetails.getFechaHoraFin());
@@ -92,33 +90,42 @@ public class PruebasService {
         prueba.setIdEmpleado(pruebaDetails.getIdEmpleado());
 
         Interesado interesado = interesadoRepository.findById(pruebaDetails.getInteresado().getId())
-                .orElseThrow(() -> new ServiceExceptionPrueba("No se encontro el interesado"));
+                .orElseThrow(() -> new ServiceExceptionPrueba("No se encontró el interesado"));
         prueba.setInteresado(interesado);
 
         Vehiculo vehiculo = vehiculoRepository.findById(pruebaDetails.getVehiculo().getId())
-                .orElseThrow(() -> new ServiceExceptionPrueba("No se encontro el vehiculo"));
+                .orElseThrow(() -> new ServiceExceptionPrueba("No se encontró el vehiculo"));
         prueba.setVehiculo(vehiculo);
 
         return repository.save(prueba);
     }
 
     public Prueba finalizar(Long id, String comentarios) throws ServiceExceptionPrueba {
-        Prueba prueba = repository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("No se encontro la Prueba"));
+        Prueba prueba = repository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("No se encontró la Prueba"));
         prueba.finalizar(comentarios);
         return repository.save(prueba);
     }
-    public Vehiculo posicionVehiculo(Long id, Posicion posicionDetails) throws ServiceExceptionPrueba {
-        Posicion posicion = posicionRepository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("No se encontro la posicion"));
 
-        Vehiculo vehiculo = vehiculoRepository.findById(posicion.getVehiculo().getId()).orElseThrow(() -> new ServiceExceptionPrueba("No se encontro el vehiculo"));
-        boolean isInPrueba = vehiculoRepository.findVehiculoByPruebaExists();
-        if (isInPrueba) {
-            int lat = posicionDetails.getLatitud();
-            int log = posicionDetails.getLongitud();
-            // todo: if (lat < vehiculo.get)
+
+    public Iterable<Prueba> getAllPruebasIncidentes() throws ServiceExceptionPrueba {
+        return pruebaRepository.findByExcedeLimitesTrue();
+    }
+
+    public Iterable<Prueba> getAllPruebasIncidentesByEmpleado(Long id) throws ServiceExceptionPrueba {
+        return pruebaRepository.findByIdEmpleadoAndExcedeLimitesTrue(id.intValue());
+    }
+
+    public Iterable<Prueba>  getAllPruebasByVehiculo(Long idVehiculo) throws ServiceExceptionPrueba {
+        if (idVehiculo == null || idVehiculo <= 0) {
+            throw new ServiceExceptionPrueba("El ID del vehículo no es válido");
         }
 
-        return vehiculo;
+        Iterable<Prueba> pruebas = pruebaRepository.findByVehiculoId(idVehiculo);
+        if (!pruebas.iterator().hasNext()) {
+            throw new ServiceExceptionPrueba("No se encontraron pruebas para el vehículo con ID: " + idVehiculo);
+        }
+
+        return pruebas;
     }
 
 }

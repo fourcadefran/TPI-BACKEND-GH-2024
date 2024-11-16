@@ -1,5 +1,6 @@
 package fran.fourcade.pruebasmicroservice.controllers;
 
+import fran.fourcade.pruebasmicroservice.models.Posicion;
 import fran.fourcade.pruebasmicroservice.models.Prueba;
 import fran.fourcade.pruebasmicroservice.models.Vehiculo;
 import fran.fourcade.pruebasmicroservice.models.Modelo;
@@ -86,6 +87,18 @@ public class VehiculoController {
             vehiculoService.delete(id);
             return ResponseEntity.ok(vehiculo);
         } catch (ServiceExceptionPrueba e) {
+            return ResponseEntity.notFound()
+                    .header("Error-Message", e.getMessage())
+                    .build();
+        }
+    }
+
+    // 1 - D
+    @PostMapping("/posicion/{id}")
+    public ResponseEntity<Vehiculo> posicionVehiculo(@PathVariable Long id, @RequestBody Posicion posicionDetails) {
+        try {
+            return ResponseEntity.ok(vehiculoService.posicionVehiculo(id, posicionDetails));
+        } catch (ServiceExceptionPrueba e){
             return ResponseEntity.notFound()
                     .header("Error-Message", e.getMessage())
                     .build();

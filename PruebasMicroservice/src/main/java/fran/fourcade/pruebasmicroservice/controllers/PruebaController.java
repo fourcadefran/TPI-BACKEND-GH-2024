@@ -1,8 +1,6 @@
 package fran.fourcade.pruebasmicroservice.controllers;
 
-import fran.fourcade.pruebasmicroservice.models.Posicion;
 import fran.fourcade.pruebasmicroservice.models.Prueba;
-import fran.fourcade.pruebasmicroservice.models.Vehiculo;
 import fran.fourcade.pruebasmicroservice.services.PruebasService;
 import fran.fourcade.pruebasmicroservice.services.ServiceExceptionPrueba;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+//TODO: CREAR DTOS
+
 @Slf4j
 @RestController
-@RequestMapping("/api/pruebas") // las demás entidades van a tener /api/pruebas/vehiculos
+@RequestMapping("/api/pruebas")
 public class PruebaController {
-    // todo: hacer los endpoints de las demas entidades con esta base
-    // ejemplo : /api/pruebas/vehiculos/{id}
     private final PruebasService pruebasService;
 
     @Autowired
@@ -23,10 +21,13 @@ public class PruebaController {
         this.pruebasService = pruebasService;
     }
 
+
     @GetMapping
     public ResponseEntity<Iterable<Prueba>> getAllPruebas() {
         return ResponseEntity.ok(pruebasService.getAll());
     }
+
+    // 1 - B
     @GetMapping("/now")
     public ResponseEntity<Iterable<Prueba>> getAllPruebasNow() {
         return ResponseEntity.ok(pruebasService.getAllNow());
@@ -44,6 +45,7 @@ public class PruebaController {
         }
     }
 
+    // 1 - A
     @PostMapping
     public ResponseEntity<Prueba> createPrueba(@RequestBody Prueba prueba) {
         return ResponseEntity.ok(pruebasService.create(prueba));
@@ -62,6 +64,7 @@ public class PruebaController {
         }
     }
     //todo: replicar esto en todos los endpoints / entidades
+    // 1 - C
     @PatchMapping("/{id}/finalizar")
     public ResponseEntity<Prueba> finalizarPrueba(@PathVariable Long id, @RequestBody Prueba pruebaDetails) {
         try {
@@ -81,16 +84,6 @@ public class PruebaController {
             pruebasService.delete(id);
             return ResponseEntity.ok(prueba);
         } catch (ServiceExceptionPrueba e) {
-            return ResponseEntity.notFound()
-                    .header("Error-Message", e.getMessage())
-                    .build();
-        }
-    }
-    @PostMapping("/{id}/posicion/vehiculo")
-    public ResponseEntity<Vehiculo> posicionVehiculo(@PathVariable Long id, @RequestBody Posicion posicionDetails) {
-        try {
-            return ResponseEntity.ok(pruebasService.posicionVehiculo(id, posicionDetails));
-        } catch (ServiceExceptionPrueba e){
             return ResponseEntity.notFound()
                     .header("Error-Message", e.getMessage())
                     .build();

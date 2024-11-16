@@ -46,8 +46,23 @@ public class Prueba {
     @Column(nullable = false)
     private String comentarios;
 
+    @Column
+    private boolean excedeLimites;
+
+    /**
+     * Finaliza la prueba con los comentarios proporcionados y marca la fecha de finalización.
+     *
+     * @param comentarios Comentarios finales para la prueba.
+     */
     public void finalizar(String comentarios) {
         this.comentarios = comentarios;
         this.fechaHoraFin = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
+    /**
+     * Marca que la prueba excedió los límites.
+     */
+    public void marcarExcesoDeLimites() {
+        this.excedeLimites = true;
     }
 }

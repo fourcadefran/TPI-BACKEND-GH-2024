@@ -7,4 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface PruebaRepository extends CrudRepository<Prueba, Long> {
     boolean existsByVehiculoAndFechaHoraInicio(Vehiculo vehiculo, String fechaHoraInicio);
     Iterable<Prueba> findAllByFechaHoraFinEmpty();
+    Prueba findPruebaByVehiculoId(Long id);
+    Iterable<Prueba> findByExcedeLimitesTrue();
+    Iterable<Prueba> findByIdEmpleadoAndExcedeLimitesTrue(int idEmpleado);
+    Iterable<Prueba> findByVehiculoId(Long vehiculoId);
 }
