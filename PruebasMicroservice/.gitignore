@@ -33,3 +33,4 @@ build/
 .vscode/
 pruebas_db.sqlite
 .DS_Store
+../.DS_Store
