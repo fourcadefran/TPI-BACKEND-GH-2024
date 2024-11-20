@@ -64,6 +64,7 @@ public class VehiculoService {
         if (pruebaOpt.isEmpty()) {
             throw new ServiceExceptionPrueba("no se encontro una prueba para este vehiculo");
         }
+        Prueba prueba = pruebaOpt.get();
 
         Agencia agencia = agenciaRepository.findFirstBy();
         double radioPermitido = agencia.getRadioAdmitidoKm();
@@ -76,6 +77,8 @@ public class VehiculoService {
 
         if (distancia > radioPermitido) {
             System.out.println("El vehículo ha excedido el radio permitido.");
+            prueba.marcarExcesoDeLimites();
+            pruebaRepository.save(prueba);
             // todo registrarNotificacion(vehiculo, "El vehículo ha excedido el radio permitido.");
         }
 
