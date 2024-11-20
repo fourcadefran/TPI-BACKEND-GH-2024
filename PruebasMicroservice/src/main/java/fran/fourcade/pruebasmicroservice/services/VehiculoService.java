@@ -1,15 +1,11 @@
 package fran.fourcade.pruebasmicroservice.services;
 
-import fran.fourcade.pruebasmicroservice.models.Modelo;
-import fran.fourcade.pruebasmicroservice.models.Posicion;
-import fran.fourcade.pruebasmicroservice.models.Prueba;
-import fran.fourcade.pruebasmicroservice.models.Vehiculo;
-import fran.fourcade.pruebasmicroservice.repositories.ModeloRepository;
-import fran.fourcade.pruebasmicroservice.repositories.PosicionRepository;
-import fran.fourcade.pruebasmicroservice.repositories.PruebaRepository;
-import fran.fourcade.pruebasmicroservice.repositories.VehiculoRepository;
+import fran.fourcade.pruebasmicroservice.models.*;
+import fran.fourcade.pruebasmicroservice.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class VehiculoService {
@@ -17,13 +13,15 @@ public class VehiculoService {
     private final PruebaRepository pruebaRepository;
     private final ModeloRepository modeloRepository;
     private final PosicionRepository posicionRepository;
+    private final AgenciaRepository agenciaRepository;
 
     @Autowired
-    public VehiculoService(VehiculoRepository vehiculoRepository, PruebaRepository pruebaRepository, ModeloRepository modeloRepository, PosicionRepository posicionRepository) {
+    public VehiculoService(VehiculoRepository vehiculoRepository, PruebaRepository pruebaRepository, ModeloRepository modeloRepository, PosicionRepository posicionRepository, AgenciaRepository agenciaRepository) {
         this.vehiculoRepository = vehiculoRepository;
         this.pruebaRepository = pruebaRepository;
         this.modeloRepository = modeloRepository;
         this.posicionRepository = posicionRepository;
+        this.agenciaRepository = agenciaRepository;
     }
 
     public Iterable<Vehiculo> getAll() {
@@ -52,36 +50,60 @@ public class VehiculoService {
 
     }
 
-    public Vehiculo posicionVehiculo(Long id, Posicion posicionDetails) throws ServiceExceptionPrueba {
-        Posicion posicion = posicionRepository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("No se encontró la posicion"));
+    public Vehiculo posicionVehiculo(Long id, Posicion posicionActual) throws ServiceExceptionPrueba {
 
-        Vehiculo vehiculo = vehiculoRepository.findById(posicion.getVehiculo().getId()).orElseThrow(() -> new ServiceExceptionPrueba("No se encontró el vehiculo"));
-        boolean isInPrueba = vehiculoRepository.findVehiculoByPruebaExists();
-        if (isInPrueba) {
-            Prueba prueba = pruebaRepository.findPruebaByVehiculoId(vehiculo.getId());
+        Posicion posicion = posicionRepository.findById(id)
+                .orElseThrow(() -> new ServiceExceptionPrueba("No se encontró la posición"));
 
-            /*
-            double radioPermitido = prueba.getRadioPermitido(); // En kilómetros
-            Posicion centroPrueba = prueba.getCentro();
 
-            // Calcular la distancia entre la posición actual y el centro de la prueba
-            double distancia = calcularDistancia(centroPrueba, posicionDetails);
+        Vehiculo vehiculo = vehiculoRepository.findById(posicion.getVehiculo().getId())
+                .orElseThrow(() -> new ServiceExceptionPrueba("No se encontró el vehículo"));
 
-            if (distancia > radioPermitido) {
-                // Almacenar una notificación sobre la violación del radio permitido
-                registrarNotification(vehiculo, "El vehículo ha excedido el radio permitido.");
-            }
 
-            // Verificar si ingresó a una zona peligrosa
-            if (esZonaPeligrosa(posicionDetails)) {
-                registrarNotification(vehiculo, "El vehículo ha ingresado a una zona peligrosa.");
-            }
-            */
-            //todo: si excedió los limites
-            prueba.marcarExcesoDeLimites();
-            pruebaRepository.save(prueba);
+        Optional<Prueba> pruebaOpt = pruebaRepository.findPruebaByVehiculoId(vehiculo.getId());
+        if (pruebaOpt.isEmpty()) {
+            throw new ServiceExceptionPrueba("no se encontro una prueba para este vehiculo");
+        }
+
+        Agencia agencia = agenciaRepository.findFirstBy();
+        double radioPermitido = agencia.getRadioAdmitidoKm();
+
+
+        double latAgencia = agencia.getCoordenadasAgencia().getLat();
+        double lonAgencia = agencia.getCoordenadasAgencia().getLon();
+
+        double distancia = calcularDistanciaEuclidiana(latAgencia, lonAgencia, posicionActual);
+
+        if (distancia > radioPermitido) {
+            System.out.println("El vehículo ha excedido el radio permitido.");
+            // todo registrarNotificacion(vehiculo, "El vehículo ha excedido el radio permitido.");
+        }
+
+        if (esZonaPeligrosa(agencia, posicionActual)) {
+            System.out.println("El vehículo ha ingresado a una zona peligrosa.");
+           //todo:  registrarNotificacion(vehiculo, "El vehículo ha ingresado a una zona peligrosa.");
         }
 
         return vehiculo;
+    }
+
+    private boolean esZonaPeligrosa( Agencia agencia, Posicion posicion) {
+        for (ZonaRestringida zona : agencia.getZonasRestringidas()) {
+            if (posicion.getLatitud() >= zona.getNoroeste().getLat()
+                    && posicion.getLatitud() <= zona.getSureste().getLat()
+                    && posicion.getLongitud() >= zona.getNoroeste().getLon()
+                    && posicion.getLongitud() <= zona.getSureste().getLon()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private double calcularDistanciaEuclidiana(double latAgencia, double lonAgencia, Posicion p2) {
+
+        double diffLat = latAgencia - p2.getLatitud();
+        double diffLon = lonAgencia - p2.getLongitud();
+
+        return Math.sqrt(diffLat * diffLat + diffLon * diffLon);
     }
 }

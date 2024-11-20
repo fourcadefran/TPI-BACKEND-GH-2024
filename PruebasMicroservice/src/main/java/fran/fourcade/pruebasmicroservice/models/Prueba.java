@@ -40,7 +40,7 @@ public class Prueba {
     @Column(nullable = false)
     private String fechaHoraInicio;
 
-    @Column()
+    @Column(nullable = true)
     private String fechaHoraFin;
 
     @Column(nullable = false)

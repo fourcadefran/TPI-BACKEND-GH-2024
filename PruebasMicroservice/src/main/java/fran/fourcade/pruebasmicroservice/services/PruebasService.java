@@ -36,7 +36,7 @@ public class PruebasService {
     }
 
     public Iterable<Prueba> getAllNow() {
-        return repository.findAllByFechaHoraFinEmpty();
+        return repository.findAllByFechaHoraFinIsNull();
     }
 
     public Prueba getById(Long id) throws ServiceExceptionPrueba {
