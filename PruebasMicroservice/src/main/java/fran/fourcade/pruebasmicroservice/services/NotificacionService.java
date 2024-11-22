@@ -1,5 +1,6 @@
 package fran.fourcade.pruebasmicroservice.services;
 
+import fran.fourcade.pruebasmicroservice.dtos.NotificacionDTO;
 import fran.fourcade.pruebasmicroservice.models.Notificacion;
 import fran.fourcade.pruebasmicroservice.models.Prueba;
 import fran.fourcade.pruebasmicroservice.repositories.NotificacionRepository;
@@ -18,7 +19,10 @@ public class NotificacionService {
         this.pruebaRepository = pruebaRepository;
     }
 
-    public Notificacion create(Notificacion notificacion) { return notificacionRepository.save(notificacion);}
+    public Notificacion create(Notificacion notificacion) {
+        return notificacionRepository.save(notificacion);
+    }
+
     public void delete(Long id) {
         notificacionRepository.deleteById(id);
     }
@@ -27,5 +31,11 @@ public class NotificacionService {
         Notificacion notificacion = new Notificacion(prueba, mensaje);
         notificacionRepository.save(notificacion);
         return "Notificación enviada";
+    }
+
+    public Notificacion promocionarNotificacion(NotificacionDTO request) {
+        Notificacion notificacion = new Notificacion();
+        notificacion.setMensaje(request.getMensaje());
+        return notificacionRepository.save(notificacion);
     }
 }
