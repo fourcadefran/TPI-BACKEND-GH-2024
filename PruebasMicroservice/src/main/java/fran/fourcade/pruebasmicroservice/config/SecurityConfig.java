@@ -18,13 +18,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST, "/api/pruebas")
-                .hasRole("Empleado")
+                .hasRole("EMPLEADO")
 
                 .requestMatchers(HttpMethod.POST, "/api/posiciones")
-                .hasRole("Vehículo")
+                .hasRole("VEHICULO")
 
-                .requestMatchers(HttpMethod.GET, "/api/reportes/incidentes")
-                .hasRole("Admin")
+                .requestMatchers(HttpMethod.GET, "/api/reportes")
+                .hasRole("ADMIN")
         ).oauth2ResourceServer(oauth2 -> oauth2. jwt(Customizer.withDefaults()));
         return http.build();
     }
