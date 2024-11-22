@@ -1,5 +1,7 @@
 package fran.fourcade.pruebasmicroservice.controllers;
 
+import fran.fourcade.pruebasmicroservice.dtos.PosicionDTO;
+import fran.fourcade.pruebasmicroservice.models.Posicion;
 import fran.fourcade.pruebasmicroservice.models.Prueba;
 import fran.fourcade.pruebasmicroservice.models.Vehiculo;
 import fran.fourcade.pruebasmicroservice.models.Modelo;
@@ -11,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -68,8 +72,9 @@ public class VehiculoController {
             // Verifica si el modelo existe antes de asignarlo al vehículo
             Modelo modelo = modeloService.getById(vehiculoDetails.getModelo().getId());
             vehiculo.setModelo(modelo);
-            Prueba prueba = pruebasService.getById(vehiculoDetails.getPrueba().getId());
-            vehiculo.setPrueba(prueba);
+            List<Prueba> pruebas = vehiculoDetails.getPruebas();
+            Prueba prueba = pruebasService.getById(pruebas.get(pruebas.size() - 1).getId());
+            vehiculo.setPruebas(prueba);
 
             return ResponseEntity.ok(vehiculoService.update(id, vehiculo));
         } catch (ServiceExceptionPrueba e) {
@@ -86,6 +91,18 @@ public class VehiculoController {
             vehiculoService.delete(id);
             return ResponseEntity.ok(vehiculo);
         } catch (ServiceExceptionPrueba e) {
+            return ResponseEntity.notFound()
+                    .header("Error-Message", e.getMessage())
+                    .build();
+        }
+    }
+
+    // 1 - D
+    @PostMapping("/posicion/{id}")
+    public ResponseEntity<Vehiculo> posicionVehiculo(@PathVariable Long id, @RequestBody PosicionDTO request) {
+        try {
+            return ResponseEntity.ok(vehiculoService.posicionVehiculo(id, request));
+        } catch (ServiceExceptionPrueba e){
             return ResponseEntity.notFound()
                     .header("Error-Message", e.getMessage())
                     .build();

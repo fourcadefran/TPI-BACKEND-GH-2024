@@ -1,0 +1,40 @@
+###
+POST http://localhost:8082/api/pruebas
+Content-Type: application/json
+
+{
+  "vehiculo": {
+    "id": 3,
+    "patente": "GHI789",
+    "modelo": {
+      "id": 3,
+      "descripcion": "Cruze",
+      "marca": {
+        "id": 3,
+        "nombre": "Chevrolet"
+      }
+    }
+  },
+  "interesado": {
+    "id": 3,
+    "tipoDocumento": "DNI",
+    "documento": "11223344",
+    "nombre": "Pedro",
+    "apellido": "Lopez",
+    "restringido": false,
+    "nroLicencia": 11223,
+    "fechaVencimientoLicencia": "2024-11-22T09:00:00"
+  },
+  "idEmpleado": 3,
+  "fechaHoraInicio": "2024-11-22T09:00:00",
+  "fechaHoraFin": "2024-11-22T11:00:00",
+  "comentarios": "test"
+
+}
+
+<> 2024-10-26T120246.200.json
+<> 2024-10-26T120136.500.json
+<> 2024-10-26T115949.500.json
+<> 2024-10-26T115655.500.json
+<> 2024-10-26T115623.500.json
+<> 2024-10-26T115535.400.json

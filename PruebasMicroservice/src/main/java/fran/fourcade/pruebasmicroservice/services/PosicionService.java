@@ -1,5 +1,6 @@
 package fran.fourcade.pruebasmicroservice.services;
 
+import fran.fourcade.pruebasmicroservice.dtos.PosicionDTO;
 import fran.fourcade.pruebasmicroservice.models.Posicion;
 import fran.fourcade.pruebasmicroservice.models.Vehiculo;
 import fran.fourcade.pruebasmicroservice.repositories.PosicionRepository;
@@ -16,6 +17,16 @@ public class PosicionService {
     public PosicionService(PosicionRepository posicionRepository, VehiculoRepository vehiculoRepository) {
         this.posicionRepository = posicionRepository;
         this.vehiculoRepository = vehiculoRepository;
+    }
+    public static Posicion convertirDTOAEntidad(PosicionDTO posicionDTO) {
+        Vehiculo vehiculo = new Vehiculo();
+        vehiculo.setId(posicionDTO.getVehiculo().getId());
+        Posicion posicion = new Posicion();
+        posicion.setVehiculo(vehiculo);
+        posicion.setLatitud(posicionDTO.getLatitud());
+        posicion.setLongitud(posicionDTO.getLongitud());
+        posicion.setFechaHora(posicionDTO.getFechaHora());
+        return posicion;
     }
     public Iterable<Posicion> getAll() {
         return posicionRepository.findAll();

@@ -1,0 +1,13 @@
+###
+POST http://localhost:8082/api/vehiculos/posicion/3
+Content-Type: application/json
+
+{
+  "vehiculo": {
+    "id": 3,
+    "patente": "GHI789"
+  },
+  "fechaHora": "2024-10-22T09:00:00",
+  "latitud": 42.50886738457441,
+  "longitud": 1.5347139324337429
+}

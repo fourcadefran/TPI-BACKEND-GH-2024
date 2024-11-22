@@ -1,6 +1,5 @@
 package fran.fourcade.pruebasmicroservice.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,12 +29,11 @@ public class Interesado {
     private String apellido;
 
     @Column(nullable = false)
-    private String restringido;
+    private Boolean restringido;
 
     @Column(nullable = false)
     private int nroLicencia;
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(nullable = false)
     private String fechaVencimientoLicencia;
 

@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+// todo: notificaciones
+
 @Entity(name = "pruebas")
 @Data
 @AllArgsConstructor
@@ -19,9 +21,9 @@ public class Prueba {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "id_vehiculo")
-    @JsonManagedReference //todo check relacion circular infinita
+    @ManyToOne
+    @JoinColumn(name = "id_vehiculo", nullable = false)
+    @JsonManagedReference
     private Vehiculo vehiculo;
 
     @OneToOne
@@ -38,14 +40,34 @@ public class Prueba {
     @Column(nullable = false)
     private String fechaHoraInicio;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String fechaHoraFin;
 
     @Column(nullable = false)
     private String comentarios;
 
+    @Column
+    private Boolean excedeLimites;
+
+    @OneToOne
+    @JoinColumn(name = "id_notificacion", nullable = true)
+    private Notificacion notificacion;
+
+
+    /**
+     * Finaliza la prueba con los comentarios proporcionados y marca la fecha de finalización.
+     *
+     * @param comentarios Comentarios finales para la prueba.
+     */
     public void finalizar(String comentarios) {
         this.comentarios = comentarios;
         this.fechaHoraFin = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
+    /**
+     * Marca que la prueba excedió los límites.
+     */
+    public void marcarExcesoDeLimites() {
+        this.excedeLimites = true;
     }
 }
