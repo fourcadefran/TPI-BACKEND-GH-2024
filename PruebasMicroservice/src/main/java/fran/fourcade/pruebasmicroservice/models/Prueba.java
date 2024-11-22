@@ -47,7 +47,13 @@ public class Prueba {
     private String comentarios;
 
     @Column
-    private boolean excedeLimites;
+    private Boolean excedeLimites;
+
+    @OneToOne
+    @JoinColumn(name = "id_notificacion")
+//    @JsonManagedReference //todo check relacion circular infinita
+    private Notificacion notificacion;
+
 
     /**
      * Finaliza la prueba con los comentarios proporcionados y marca la fecha de finalización.

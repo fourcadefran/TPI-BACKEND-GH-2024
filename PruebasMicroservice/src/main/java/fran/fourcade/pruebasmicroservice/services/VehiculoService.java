@@ -14,14 +14,16 @@ public class VehiculoService {
     private final ModeloRepository modeloRepository;
     private final PosicionRepository posicionRepository;
     private final AgenciaRepository agenciaRepository;
+    private final NotificacionService notificacionService;
 
     @Autowired
-    public VehiculoService(VehiculoRepository vehiculoRepository, PruebaRepository pruebaRepository, ModeloRepository modeloRepository, PosicionRepository posicionRepository, AgenciaRepository agenciaRepository) {
+    public VehiculoService(VehiculoRepository vehiculoRepository, PruebaRepository pruebaRepository, ModeloRepository modeloRepository, PosicionRepository posicionRepository, AgenciaRepository agenciaRepository, NotificacionService notificacionService) {
         this.vehiculoRepository = vehiculoRepository;
         this.pruebaRepository = pruebaRepository;
         this.modeloRepository = modeloRepository;
         this.posicionRepository = posicionRepository;
         this.agenciaRepository = agenciaRepository;
+        this.notificacionService = notificacionService;
     }
 
     public Iterable<Vehiculo> getAll() {
@@ -79,12 +81,12 @@ public class VehiculoService {
             System.out.println("El vehículo ha excedido el radio permitido.");
             prueba.marcarExcesoDeLimites();
             pruebaRepository.save(prueba);
-            // todo registrarNotificacion(vehiculo, "El vehículo ha excedido el radio permitido.");
+            notificacionService.registrarNotificacion(prueba, "El vehículo ha excedido el radio permitido.");
         }
 
         if (esZonaPeligrosa(agencia, posicionActual)) {
             System.out.println("El vehículo ha ingresado a una zona peligrosa.");
-           //todo:  registrarNotificacion(vehiculo, "El vehículo ha ingresado a una zona peligrosa.");
+            notificacionService.registrarNotificacion(prueba, "El vehículo ha ingresado a una zona peligrosa.");
         }
 
         return vehiculo;
