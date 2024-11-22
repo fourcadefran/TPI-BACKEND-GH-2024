@@ -50,8 +50,7 @@ public class Prueba {
     private Boolean excedeLimites;
 
     @OneToOne
-    @JoinColumn(name = "id_notificacion")
-//    @JsonManagedReference //todo check relacion circular infinita
+    @JoinColumn(name = "id_notificacion", nullable = true)
     private Notificacion notificacion;
 
 

@@ -3,12 +3,33 @@ POST http://localhost:8082/api/pruebas
 Content-Type: application/json
 
 {
-  "idVehiculo": 13,
-  "idInteresado": 13,
-  "idEmpleado": 13,
-  "fechaHoraInicio": "03/09/1999",
-  "fechaHoraFin": "03/10/1999",
-  "comentarios": "hola"
+  "vehiculo": {
+    "id": 3,
+    "patente": "GHI789",
+    "modelo": {
+      "id": 3,
+      "descripcion": "Cruze",
+      "marca": {
+        "id": 3,
+        "nombre": "Chevrolet"
+      }
+    }
+  },
+  "interesado": {
+    "id": 3,
+    "tipoDocumento": "DNI",
+    "documento": "11223344",
+    "nombre": "Pedro",
+    "apellido": "Lopez",
+    "restringido": false,
+    "nroLicencia": 11223,
+    "fechaVencimientoLicencia": "20/03/2026"
+  },
+  "idEmpleado": 3,
+  "fechaHoraInicio": "2024-11-22T09:00:00",
+  "fechaHoraFin": "2024-11-22T11:00:00",
+  "comentarios": "test"
+
 }
 
 <> 2024-10-26T120246.200.json

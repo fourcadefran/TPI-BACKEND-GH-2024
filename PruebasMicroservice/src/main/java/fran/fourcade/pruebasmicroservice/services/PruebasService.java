@@ -10,8 +10,7 @@ import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.time.LocalDateTime;
 
 
 import java.time.LocalDate;
@@ -53,23 +52,19 @@ public class PruebasService {
         }
 
         String licenciaFechaVencimiento = interesado.getFechaVencimientoLicencia();
-        LocalDate fechaExpiracion;
 
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            fechaExpiracion = LocalDate.parse(licenciaFechaVencimiento, formatter);
-        } catch (DateTimeParseException e) {
-            throw new ServiceException("El formato de la fecha de licencia es inválido.");
-        }
+        LocalDateTime fechaVencimientoDateTime = LocalDateTime.parse(licenciaFechaVencimiento);
 
-        if (fechaExpiracion.isBefore(LocalDate.now())) {
+        LocalDate fechaVencimiento = fechaVencimientoDateTime.toLocalDate();
+
+        if (fechaVencimiento.isBefore(LocalDate.now())) {
             throw new ServiceException("La licencia del interesado está vencida.");
         }
 
         Vehiculo vehiculo = vehiculoRepository.findById(prueba.getVehiculo().getId())
                 .orElseThrow(() -> new ServiceException("No se encontró el vehículo"));
 
-        boolean isVehicleInUse = repository.existsByVehiculoAndFechaHoraInicio(vehiculo, LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        boolean isVehicleInUse = repository.existsByVehiculoAndFechaHoraInicio(vehiculo, "2025-11-22T09:00:00");
         if (isVehicleInUse) {
             throw new ServiceException("El vehículo ya está en prueba en este momento.");
         }
