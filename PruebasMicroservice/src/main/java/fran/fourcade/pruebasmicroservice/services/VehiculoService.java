@@ -1,11 +1,15 @@
 package fran.fourcade.pruebasmicroservice.services;
 
+import fran.fourcade.pruebasmicroservice.dtos.PosicionDTO;
 import fran.fourcade.pruebasmicroservice.models.*;
 import fran.fourcade.pruebasmicroservice.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+
+import static fran.fourcade.pruebasmicroservice.services.PosicionService.convertirDTOAEntidad;
 
 @Service
 public class VehiculoService {
@@ -29,31 +33,37 @@ public class VehiculoService {
     public Iterable<Vehiculo> getAll() {
         return vehiculoRepository.findAll();
     }
+
     public Vehiculo getById(Long id) throws ServiceExceptionPrueba {
         return vehiculoRepository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("El vehiculo no existe"));
     }
+
     public Vehiculo create(Vehiculo vehiculo) {
         return vehiculoRepository.save(vehiculo);
     }
+
     public void delete(Long id) {
         vehiculoRepository.deleteById(id);
     }
+
     public Vehiculo update(Long id, Vehiculo vehiculoDetails) throws ServiceExceptionPrueba {
-        Prueba prueba = pruebaRepository.findById(vehiculoDetails.getPrueba().getId())
+        List<Prueba> pruebas = vehiculoDetails.getPruebas();
+        Prueba prueba = pruebaRepository.findById(pruebas.get(pruebas.size() - 1).getId())
                 .orElseThrow(() -> new ServiceExceptionPrueba("La prueba no existe"));
 
         Modelo modelo = modeloRepository.findById(vehiculoDetails.getModelo().getId())
                 .orElseThrow(() -> new ServiceExceptionPrueba("No existe el modelo."));
         Vehiculo vehiculo = vehiculoRepository.findById(id).orElseThrow(() -> new ServiceExceptionPrueba("El vehiculo no existe"));
-        vehiculo.setPrueba(prueba);
+        vehiculo.setPruebas(prueba);
         vehiculo.setModelo(modelo);
         vehiculo.setPatente(vehiculoDetails.getPatente());
         return vehiculoRepository.save(vehiculo);
 
     }
 
-    public Vehiculo posicionVehiculo(Long id, Posicion posicionActual) throws ServiceExceptionPrueba {
+    public Vehiculo posicionVehiculo(Long id, PosicionDTO request) throws ServiceExceptionPrueba {
 
+        Posicion posicionActual = convertirDTOAEntidad(request);
         Posicion posicion = posicionRepository.findById(id)
                 .orElseThrow(() -> new ServiceExceptionPrueba("No se encontró la posición"));
 
@@ -62,11 +72,11 @@ public class VehiculoService {
                 .orElseThrow(() -> new ServiceExceptionPrueba("No se encontró el vehículo"));
 
 
-        Optional<Prueba> pruebaOpt = pruebaRepository.findPruebaByVehiculoId(vehiculo.getId());
-        if (pruebaOpt.isEmpty()) {
+        List<Prueba> pruebas = pruebaRepository.findPruebaByVehiculoId(vehiculo.getId());
+        if (pruebas.isEmpty()) {
             throw new ServiceExceptionPrueba("no se encontro una prueba para este vehiculo");
         }
-        Prueba prueba = pruebaOpt.get();
+        Prueba prueba = pruebas.get(pruebas.size() - 1);
 
         Agencia agencia = agenciaRepository.findFirstBy();
         double radioPermitido = agencia.getRadioAdmitidoKm();
@@ -92,7 +102,7 @@ public class VehiculoService {
         return vehiculo;
     }
 
-    private boolean esZonaPeligrosa( Agencia agencia, Posicion posicion) {
+    private boolean esZonaPeligrosa(Agencia agencia, Posicion posicion) {
         for (ZonaRestringida zona : agencia.getZonasRestringidas()) {
             if (posicion.getLatitud() >= zona.getNoroeste().getLat()
                     && posicion.getLatitud() <= zona.getSureste().getLat()
@@ -110,5 +120,17 @@ public class VehiculoService {
         double diffLon = lonAgencia - p2.getLongitud();
 
         return Math.sqrt(diffLat * diffLat + diffLon * diffLon);
+    }
+
+    public double getCantidadKMdePruebaPorVehiculo(Long idVehiculo) throws ServiceExceptionPrueba {
+        Vehiculo vehiculo = vehiculoRepository.findById(idVehiculo).orElseThrow(() -> new ServiceExceptionPrueba("No se encontró el vehículo"));
+        Posicion posicionActual = posicionRepository.findByVehiculo(vehiculo);
+
+        Agencia agencia = agenciaRepository.findFirstBy();
+
+        double latAgencia = agencia.getCoordenadasAgencia().getLat();
+        double lonAgencia = agencia.getCoordenadasAgencia().getLon();
+
+        return calcularDistanciaEuclidiana(latAgencia, lonAgencia, posicionActual);
     }
 }

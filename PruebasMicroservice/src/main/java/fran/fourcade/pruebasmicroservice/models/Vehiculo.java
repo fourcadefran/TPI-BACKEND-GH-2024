@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity(name = "vehiculos")
 @Data
 @AllArgsConstructor
@@ -19,13 +21,16 @@ public class Vehiculo {
     @Column(nullable = false, unique = true)
     private String patente;
 
-    @OneToOne(mappedBy = "vehiculo")
-    @JsonBackReference
-    private Prueba prueba;
+    @OneToMany(mappedBy = "vehiculo")
+    private List<Prueba> pruebas;
 
     @OneToOne
     @JoinColumn(name = "id_modelo", nullable = false)
     private Modelo modelo;
+
+    public void setPruebas(Prueba prueba) {
+        this.pruebas.add(prueba);
+    }
 
 
 }
