@@ -1,5 +1,6 @@
 package fran.fourcade.pruebasmicroservice.services;
 
+import fran.fourcade.pruebasmicroservice.dtos.PruebaDTO;
 import fran.fourcade.pruebasmicroservice.models.Interesado;
 import fran.fourcade.pruebasmicroservice.models.Prueba;
 import fran.fourcade.pruebasmicroservice.models.Vehiculo;
@@ -29,6 +30,25 @@ public class PruebasService {
         this.vehiculoRepository = vehiculoRepository;
         this.pruebaRepository = pruebaRepository;
     }
+    public Prueba convertirDtoAEntidad(PruebaDTO pruebaDTO) {
+        Vehiculo vehiculo = new Vehiculo();
+        vehiculo.setId(pruebaDTO.getVehiculo().getId());
+
+        Interesado interesado = new Interesado();
+        interesado.setId(pruebaDTO.getInteresado().getId());
+        interesado.setTipoDocumento(pruebaDTO.getInteresado().getTipoDocumento());
+        interesado.setDocumento(pruebaDTO.getInteresado().getDocumento());
+
+        Prueba prueba = new Prueba();
+        prueba.setVehiculo(vehiculo);
+        prueba.setInteresado(interesado);
+        prueba.setIdEmpleado(pruebaDTO.getIdEmpleado());
+        prueba.setFechaHoraInicio(pruebaDTO.getFechaHoraInicio());
+        prueba.setFechaHoraFin(pruebaDTO.getFechaHoraFin());
+        prueba.setComentarios(pruebaDTO.getComentarios());
+
+        return prueba;
+    }
 
     public Iterable<Prueba> getAll() {
         return repository.findAll();
@@ -43,7 +63,8 @@ public class PruebasService {
 
     }
 
-    public Prueba create(Prueba prueba) {
+    public Prueba create(PruebaDTO request) {
+        Prueba prueba = convertirDtoAEntidad(request);
         Interesado interesado = interesadoRepository.findById(prueba.getInteresado().getId())
                 .orElseThrow(() -> new ServiceException("No se encontró el interesado"));
 
@@ -64,7 +85,8 @@ public class PruebasService {
         Vehiculo vehiculo = vehiculoRepository.findById(prueba.getVehiculo().getId())
                 .orElseThrow(() -> new ServiceException("No se encontró el vehículo"));
 
-        boolean isVehicleInUse = repository.existsByVehiculoAndFechaHoraInicio(vehiculo, "2025-11-22T09:00:00");
+        //boolean isVehicleInUse = repository.existsByVehiculoAndFechaHoraInicio(vehiculo, "2025-11-22T09:00:00");
+        boolean isVehicleInUse = repository.existsByVehiculoAndFechaHoraFinIsNull(vehiculo);
         if (isVehicleInUse) {
             throw new ServiceException("El vehículo ya está en prueba en este momento.");
         }

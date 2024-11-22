@@ -21,9 +21,9 @@ public class Prueba {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "id_vehiculo")
-    @JsonManagedReference //todo check relacion circular infinita
+    @ManyToOne
+    @JoinColumn(name = "id_vehiculo", nullable = false)
+    @JsonManagedReference
     private Vehiculo vehiculo;
 
     @OneToOne

@@ -23,7 +23,7 @@ Content-Type: application/json
     "apellido": "Lopez",
     "restringido": false,
     "nroLicencia": 11223,
-    "fechaVencimientoLicencia": "20/03/2026"
+    "fechaVencimientoLicencia": "2024-11-22T09:00:00"
   },
   "idEmpleado": 3,
   "fechaHoraInicio": "2024-11-22T09:00:00",

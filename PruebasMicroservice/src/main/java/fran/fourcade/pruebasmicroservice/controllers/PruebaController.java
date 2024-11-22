@@ -1,5 +1,7 @@
 package fran.fourcade.pruebasmicroservice.controllers;
 
+import fran.fourcade.pruebasmicroservice.dtos.FinalizarPruebaDTO;
+import fran.fourcade.pruebasmicroservice.dtos.PruebaDTO;
 import fran.fourcade.pruebasmicroservice.models.Prueba;
 import fran.fourcade.pruebasmicroservice.services.PruebasService;
 import fran.fourcade.pruebasmicroservice.services.ServiceExceptionPrueba;
@@ -47,8 +49,8 @@ public class PruebaController {
 
     // 1 - A
     @PostMapping
-    public ResponseEntity<Prueba> createPrueba(@RequestBody Prueba prueba) {
-        return ResponseEntity.ok(pruebasService.create(prueba));
+    public ResponseEntity<Prueba> createPrueba(@RequestBody PruebaDTO request) {
+        return ResponseEntity.ok(pruebasService.create(request));
     }
     //todo: create generic put method
 
@@ -66,10 +68,10 @@ public class PruebaController {
     //todo: replicar esto en todos los endpoints / entidades
     // 1 - C
     @PatchMapping("/{id}/finalizar")
-    public ResponseEntity<Prueba> finalizarPrueba(@PathVariable Long id, @RequestBody Prueba pruebaDetails) {
+    public ResponseEntity<Prueba> finalizarPrueba(@PathVariable Long id, @RequestBody FinalizarPruebaDTO request) {
         try {
             // todo: crear dto requestComentario pasar solo comentario
-            return ResponseEntity.ok(pruebasService.finalizar(id, pruebaDetails.getComentarios()));
+            return ResponseEntity.ok(pruebasService.finalizar(id, request.getComentarios()));
         } catch (ServiceExceptionPrueba e) {
             return ResponseEntity.notFound()
                     .header("Error-Message", e.getMessage())
